@@ -1,0 +1,59 @@
+---
+title: "EDA"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(httr)
+library(jsonlite)
+library(tidyr)
+library(dplyr)
+library(tidyverse)
+library(stringr)
+```
+
+```{r getdata}
+
+r <- GET("https://api.pushshift.io/reddit/search/comment/?subreddit=pregnant&limit=1000")
+raw_data <- fromJSON(rawToChar(r$content))
+glimpse(raw_data)
+
+```
+
+Turn data into a df and extract comments from 'body'
+
+```{r}
+
+data_df <- enframe(unlist(raw_data))
+
+body <- data_df %>% 
+  dplyr::filter(startsWith(as.character(name),"data.body"))
+
+```
+
+Drugs that we're interested in
+
+```{r}
+
+# testing with pregnancy added to the terms we care about
+dr <- c('pregnant', 'buprenorphine', 'bupe', 'suboxone', 'suboxon', 'subutex', 'subuteks', 'subutek', 'temgesic', 'sublocade', 'buprenex', 'probuphine', 'methadone', 'methadose', 'dolophine', 'dolophene', 'dolaphine', 'naltrexone', 'vivitrol')
+
+# finds if at least one of the drugs listed above in the comments
+txt <- body %>% 
+  mutate(result = if_else(grepl(dr, body$value) == TRUE, body$value, 'NA')) %>% 
+  filter(result != 'NA') %>% 
+  select(value)
+
+```
+
+Extract 3 words before and 3 words after the pattern of interest
+
+```{r}
+
+str_extract(txt$value, "([^\\s]+\\s){3}pregnant(\\s[^\\s]+){3}")
+
+```
+
+
+
