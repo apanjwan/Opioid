@@ -39,6 +39,11 @@ Drugs that we're interested in
 # testing with pregnancy added to the terms we care about
 dr <- c('pregnant', 'buprenorphine', 'bupe', 'suboxone', 'suboxon', 'subutex', 'subuteks', 'subutek', 'temgesic', 'sublocade', 'buprenex', 'probuphine', 'methadone', 'methadose', 'dolophine', 'dolophene', 'dolaphine', 'naltrexone', 'vivitrol')
 
+conflict <- c('subs') # can add from below list here as well
+
+# urban dictionary recommends the following as well
+urban <- c('saboxine', 'oranges', 'naloxone', 'narcotic', 'narcotics', 'drug', 'drugs', 'heroin', 'herion', 'dilaudid', 'percocet', 'juice', 'liquid handcuffs', 'smoking rock')
+
 # finds if at least one of the drugs listed above in the comments
 txt <- body %>% 
   mutate(result = if_else(grepl(dr, body$value) == TRUE, body$value, 'NA')) %>% 
